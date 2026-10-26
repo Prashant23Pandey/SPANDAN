@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi-Role Healthcare Dashboard Suite — BellyBand</title>
+  <meta name="description" content="Production-ready multi-role maternal health dashboard ecosystem with real-time BLE telemetry, institutional verification, and emergency operations." />
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body>
+
+  <!-- Ambient Dynamic Background Orbs -->
+  <div class="app-background">
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="ambient-orb orb-3"></div>
+  </div>
+
+  <!-- Main Application Container -->
+  <div id="app-root">
+
+    <!-- ── Responsive Sidebar Navigation ────────────────────────────────────── -->
+    <aside id="app-sidebar" role="navigation" aria-label="Role Sidebar Navigation">
+      <!-- Brand Header -->
+      <div class="sidebar-header">
+        <a href="../../index.html" style="text-decoration:none; display:flex; align-items:center; gap:12px;">
+          <div class="brand-icon-wrap">🌸</div>
+          <div class="brand-info">
+            <span class="brand-title">Belly<span>Band</span></span>
+            <span class="brand-subtitle">Healthcare Suite</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Active User Profile Card -->
+      <div class="sidebar-user-card">
+        <div class="user-avatar-badge" id="sidebarUserAvatar">👑
+          <div class="status-indicator-dot"></div>
+        </div>
+        <div class="user-meta-info">
+          <div class="user-meta-name" id="sidebarUserName">Prashant Pandey</div>
+          <div class="user-meta-role" id="sidebarUserRole">Super Admin</div>
+        </div>
+      </div>
+
+      <!-- Dynamic Navigation Section -->
+      <div class="sidebar-nav-container">
+        <div class="nav-section-heading">Workspace Navigation</div>
+        <ul class="nav-list" id="sidebarNavList">
+          <!-- Populated dynamically based on active role -->
+        </ul>
+      </div>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <button class="nav-item-btn" id="btnAppLogout" style="color:#F87171;">
+          <span class="nav-icon">🚪</span>
+          <span class="nav-label">Sign Out</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ── Main Layout (Topnav + Viewport) ──────────────────────────────────── -->
+    <div id="app-main-layout">
+
+      <!-- Top Navigation Bar -->
+      <nav id="app-topnav" role="banner">
+        <!-- Left: Mobile toggle + Telemetry pulse -->
+        <div class="topnav-left">
+          <button class="menu-toggle-btn" id="sidebarMobileToggle" aria-label="Toggle menu">☰</button>
+          <div class="telemetry-status-pill">
+            <div class="telemetry-pulse"></div>
+            <span id="topNavFacilityIndicator">🌐 BellyBand Global HQ</span>
+          </div>
+        </div>
+
+        <!-- Center: Super Admin Global Role Switcher / Override -->
+        <div class="topnav-center">
+          <div class="role-override-selector-wrap" id="roleOverrideContainer" style="display:none;">
+            <span class="role-override-label">⚡ Role Override:</span>
+            <select class="role-override-select" id="roleOverrideSelect" aria-label="Global Role Override">
+              <!-- Populated with all 6 roles for instant Super Admin switching -->
+            </select>
+          </div>
+        </div>
+
+        <!-- Right: Role badge, quick actions & user info -->
+        <div class="topnav-right">
+          <div class="role-badge-chip" id="topNavRoleBadge">👑 Super Admin</div>
+
+          <div class="user-dropdown-btn" id="userMenuTrigger">
+            <div class="user-dropdown-avatar" id="topNavUserAvatar">👑</div>
+            <span style="font-size:13px; font-weight:700; color:var(--text-primary);" id="topNavUserName">Prashant</span>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Main Viewport Area (Where the 6 views are mounted) -->
+      <main id="app-viewport" role="main">
+        <!-- Injected dynamically by dashboard-router.js -->
+        <div style="display:flex; align-items:center; justify-content:center; height:60vh; font-size:16px; color:var(--text-secondary);">
+          <div style="text-align:center;">
+            <div style="font-size:40px; margin-bottom:12px;">🌸</div>
+            <div>Initializing BellyBand Multi-Role Dashboard Grid...</div>
+          </div>
+        </div>
+      </main>
+
+    </div>
+  </div>
+
+  <!-- ── Global Modal Backdrop & Shell ──────────────────────────────────────── -->
+  <div class="modal-overlay-backdrop" id="appModalBackdrop" role="dialog" aria-modal="true">
+    <div class="modal-dialog-shell">
+      <div class="modal-header-strip">
+        <h3 style="font-family:var(--font-heading); font-size:18px; font-weight:800; color:var(--text-primary);" id="modalTitle">Modal Header</h3>
+        <button class="action-icon-btn" id="modalCloseBtn" aria-label="Close modal">✕</button>
+      </div>
+      <div class="modal-body-area" id="modalBody">
+        <!-- Injected dynamically -->
+      </div>
+      <div class="modal-footer-strip">
+        <button class="btn-core btn-secondary" id="modalCancelBtn">Cancel</button>
+        <button class="btn-core btn-primary-role" id="modalConfirmBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Toast Notification Shelf ───────────────────────────────────────────── -->
+  <div id="toast-shelf-container" aria-live="polite"></div>
+
+  <!-- ── Scripts ───────────────────────────────────────────────────────────── -->
+  <script src="auth-controller.js"></script>
+  <script src="view-super-admin.js"></script>
+  <script src="view-hospital-admin.js"></script>
+  <script src="view-clinical.js"></script>
+  <script src="view-allied.js"></script>
+  <script src="view-field.js"></script>
+  <script src="view-emergency.js"></script>
+  <script src="view-profile-settings.js"></script>
+  <script src="layout-wrapper.js"></script>
+  <script src="dashboard-router.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize Layout & Router
+      if (window.BellyBandLayout) window.BellyBandLayout.initLayout();
+      if (window.BellyBandRouter) window.BellyBandRouter.router.handleRoute();
+    });
+  </script>
+</body>
+</html>

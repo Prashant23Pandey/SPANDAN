@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Healthcare Dashboard — BellyBand</title>
+  <link rel="stylesheet" href="styles/hc-auth.css" />
+  <style>
+    .hc-logout-btn {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: #FCA5A5;
+      border-radius: 10px;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      transition: all 0.2s;
+    }
+    .hc-logout-btn:hover { background: rgba(239,68,68,0.2); }
+    .hc-top-bar {
+      width: 100%;
+      max-width: 700px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .hc-verification-info {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin-top: 16px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+    .hc-verification-info h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    .hc-verification-steps {
+      list-style: none;
+      counter-reset: vstep;
+      padding: 0;
+      margin-top: 12px;
+    }
+    .hc-verification-steps li {
+      counter-increment: vstep;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .hc-verification-steps li:last-child { border-bottom: none; }
+    .hc-vstep-num {
+      width: 24px; height: 24px;
+      background: var(--teal-glow);
+      border: 1px solid var(--teal-500);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--teal-400);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hc-bg"></div>
+  <div class="hc-orb hc-orb-1"></div>
+  <div class="hc-orb hc-orb-2"></div>
+
+  <div class="hc-page">
+
+    <!-- Top bar -->
+    <div class="hc-top-bar">
+      <a href="../index.html" class="hc-brand" style="margin-bottom:0;">
+        <div class="hc-brand-icon">🌸</div>
+        <div>
+          <span class="hc-brand-text">BellyBand</span>
+          <span class="hc-brand-sub">Healthcare Portal</span>
+        </div>
+      </a>
+      <form action="php/hc-logout.php" method="POST">
+        <button class="hc-logout-btn" type="submit">Logout →</button>
+      </form>
+    </div>
+
+    <div class="hc-dashboard-wrap">
+
+      <!-- Hero Card -->
+      <div class="hc-dash-hero">
+        <div class="hc-dash-avatar" id="dashAvatar">🏥</div>
+        <div class="hc-dash-name" id="dashName">Loading…</div>
+        <div class="hc-dash-role" id="dashRole">—</div>
+        <div class="hc-dash-dept" id="dashDept">—</div>
+
+        <!-- Status Badge -->
+        <div class="hc-status-badge pending" id="dashStatusBadge">
+          <div class="hc-status-dot"></div>
+          <span id="dashStatusText">Pending Verification</span>
+        </div>
+
+        <p id="dashStatusDesc" style="font-size:13px; color:var(--text-secondary); max-width:400px; margin:0 auto; line-height:1.6;">
+          Your credentials are under review by our verification team.
+          You'll receive an email confirmation within 24–48 hours.
+        </p>
+      </div>
+
+      <!-- Verification Process (shown when pending) -->
+      <div class="hc-verification-info" id="dashVerificationInfo">
+        <h3>📋 Verification Process</h3>
+        <p>Your account is in the verification queue. Here's what happens next:</p>
+        <ol class="hc-verification-steps">
+          <li>
+            <div class="hc-vstep-num">1</div>
+            <div>
+              <strong>Document Review</strong> — Our team reviews your uploaded license document and registration number.
+            </div>
+          </li>
+          <li>
+            <div class="hc-vstep-num">2</div>
+            <div>
+              <strong>Council Verification</strong> — We cross-check your credentials with the relevant state medical council or licensing body.
+            </div>
+          </li>
+          <li>
+            <div class="hc-vstep-num">3</div>
+            <div>
+              <strong>Approval &amp; Activation</strong> — Once verified, your account status changes to <strong style="color:var(--success);">Verified</strong> and all healthcare routes are activated.
+            </div>
+          </li>
+          <li>
+            <div class="hc-vstep-num">4</div>
+            <div>
+              <strong>Email Notification</strong> — You receive a confirmation email with your role-specific onboarding guide.
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Quick Access Tiles -->
+      <div style="margin-top:24px;">
+        <h2 style="font-size:18px; font-weight:700; margin-bottom:14px; color:var(--text-secondary);">
+          Quick Access
+        </h2>
+        <div class="hc-dash-grid" id="dashTileGrid">
+          <!-- Populated by JS based on role -->
+        </div>
+      </div>
+
+    </div><!-- /.hc-dashboard-wrap -->
+  </div>
+
+  <script src="js/hc-auth.js"></script>
+  <script>
+    /* ── Dashboard Initialization ── */
+    (function () {
+      // Read session data from URL params or PHP-injected data
+      // In production these come from PHP session; here we read URL params for demo
+      const params   = new URLSearchParams(window.location.search);
+      const name     = params.get('name')   || 'Healthcare User';
+      const role     = params.get('role')   || 'Healthcare Professional';
+      const dept     = params.get('dept')   || 'Clinical Services';
+      const status   = params.get('status') || 'pending_verification';
+      const deptId   = parseInt(params.get('dept_id') || '1', 10);
+
+      // Populate hero
+      document.getElementById('dashName').textContent = name;
+      document.getElementById('dashRole').textContent = role;
+      document.getElementById('dashDept').textContent = dept;
+
+      // Department emoji avatars
+      const deptEmoji = { 1:'🩺', 2:'💊', 3:'🌿', 4:'🚑', 5:'🤱' };
+      document.getElementById('dashAvatar').textContent = deptEmoji[deptId] || '🏥';
+
+      // Status badge
+      const badge    = document.getElementById('dashStatusBadge');
+      const badgeTxt = document.getElementById('dashStatusText');
+      const desc     = document.getElementById('dashStatusDesc');
+      const verInfo  = document.getElementById('dashVerificationInfo');
+
+      const statusMap = {
+        pending_verification: {
+          cls: 'pending',  label: '🕐 Pending Verification',
+          desc: 'Your credentials are under review. You\'ll be notified within 24–48 hours.',
+        },
+        verified: {
+          cls: 'verified', label: '✅ Verified Healthcare Professional',
+          desc: 'Your account is fully verified. All clinical features are now available.',
+        },
+        active: {
+          cls: 'active',   label: '✓ Active Account',
+          desc: 'Your account is active and ready to use.',
+        },
+        rejected: {
+          cls: 'pending',  label: '✗ Verification Rejected',
+          desc: 'Your credentials could not be verified. Please contact support@bellyband.health.',
+        },
+      };
+
+      const s = statusMap[status] || statusMap['pending_verification'];
+      badge.className = `hc-status-badge ${s.cls}`;
+      badgeTxt.textContent = s.label;
+      desc.textContent = s.desc;
+      if (status === 'verified' || status === 'active') {
+        verInfo.style.display = 'none';
+      }
+
+      // Role-based dashboard tiles
+      const isLocked = (status === 'pending_verification' || status === 'rejected');
+      const allTiles = [
+        { icon:'📊', label:'Patient Dashboard',   sub:'View assigned patients',            locked: isLocked },
+        { icon:'📅', label:'Appointments',         sub:'Upcoming consultations & visits',   locked: isLocked },
+        { icon:'📋', label:'Clinical Notes',       sub:'SOAP notes & records',              locked: isLocked },
+        { icon:'💬', label:'Secure Messaging',     sub:'Communicate with the care team',    locked: isLocked },
+        { icon:'🔔', label:'Alerts & Reminders',   sub:'Patient alerts and notifications',  locked: isLocked },
+        { icon:'👤', label:'My Profile',           sub:'Update your details',               locked: false    },
+        { icon:'📂', label:'Documents',            sub:'Uploaded credentials & reports',    locked: false    },
+        { icon:'❓', label:'Help & Support',       sub:'Get in touch with our team',        locked: false    },
+      ];
+
+      const grid = document.getElementById('dashTileGrid');
+      allTiles.forEach(t => {
+        const tile = document.createElement('div');
+        tile.className = 'hc-dash-tile' + (t.locked ? ' locked' : '');
+        tile.innerHTML = `
+          <div class="hc-tile-icon">${t.icon}</div>
+          <div class="hc-tile-label">${t.label}${t.locked ? ' 🔒' : ''}</div>
+          <div class="hc-tile-sub">${t.locked ? 'Available after verification' : t.sub}</div>
+        `;
+        if (!t.locked) tile.setAttribute('tabindex', '0');
+        grid.appendChild(tile);
+      });
+    })();
+  </script>
+</body>
+</html>

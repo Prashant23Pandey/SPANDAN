@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Healthcare Registration — BellyBand</title>
+  <meta name="description" content="Secure multi-role registration portal for BellyBand Healthcare professionals and caregivers." />
+  <link rel="stylesheet" href="styles/hc-auth.css" />
+</head>
+<body>
+
+  <!-- Animated background -->
+  <div class="hc-bg"></div>
+  <div class="hc-orb hc-orb-1"></div>
+  <div class="hc-orb hc-orb-2"></div>
+
+  <div class="hc-page">
+
+    <!-- Brand -->
+    <a href="../index.html" class="hc-brand">
+      <div class="hc-brand-icon">🌸</div>
+      <div>
+        <span class="hc-brand-text">BellyBand</span>
+        <span class="hc-brand-sub">Healthcare Portal</span>
+      </div>
+    </a>
+
+    <!-- Progress Steps -->
+    <div class="hc-progress-wrap">
+      <div class="hc-step-labels">
+        <div class="hc-step-label active" id="hcStepLabel1">
+          <div class="hc-step-dot">1</div>
+          <span>Identity</span>
+        </div>
+        <div class="hc-step-label" id="hcStepLabel2">
+          <div class="hc-step-dot">2</div>
+          <span>Role</span>
+        </div>
+        <div class="hc-step-label" id="hcStepLabel3">
+          <div class="hc-step-dot">3</div>
+          <span>Credentials</span>
+        </div>
+        <div class="hc-step-label" id="hcStepLabel4">
+          <div class="hc-step-dot">4</div>
+          <span>Security</span>
+        </div>
+      </div>
+      <div class="hc-progress-bar-track">
+        <div class="hc-progress-bar-fill" id="hcProgressFill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- Global Alert -->
+    <div class="hc-alert" id="hcGlobalAlert" role="alert"></div>
+
+    <!-- ── Main Card ── -->
+    <div class="hc-card">
+
+      <!-- ══════════════════════════════════════
+           STEP 1 — BASIC IDENTITY
+           ══════════════════════════════════════ -->
+      <div class="hc-step-panel active" id="hcStep1">
+
+        <div class="hc-step-header">
+          <span class="hc-step-tag">Step 1 of 4</span>
+          <h1 class="hc-step-title">Tell us who you are</h1>
+          <p class="hc-step-sub">Basic identity details — all fields are required for account verification.</p>
+        </div>
+
+        <!-- Full Name -->
+        <div class="hc-field">
+          <label class="hc-label" for="hcFullName">Full Name <span class="required-star">*</span></label>
+          <input class="hc-input" type="text" id="hcFullName" name="full_name"
+                 placeholder="Dr. Priya Sharma" autocomplete="name" />
+          <span class="hc-field-error" id="hcFullNameError"></span>
+        </div>
+
+        <!-- Email -->
+        <div class="hc-field">
+          <label class="hc-label" for="hcEmail">Email Address <span class="required-star">*</span></label>
+          <input class="hc-input" type="email" id="hcEmail" name="email"
+                 placeholder="you@hospital.org" autocomplete="email" />
+          <span class="hc-field-error" id="hcEmailError"></span>
+        </div>
+
+        <!-- Phone + OTP -->
+        <div class="hc-field">
+          <label class="hc-label" for="hcPhone">Phone Number <span class="required-star">*</span></label>
+          <div class="hc-input-row">
+            <input class="hc-input" type="tel" id="hcPhone" name="phone"
+                   placeholder="+91 9876 543210" autocomplete="tel" />
+            <button class="hc-otp-btn" id="hcOtpBtn" type="button" onclick="sendOTP()">
+              Send OTP
+            </button>
+          </div>
+          <span class="hc-field-error" id="hcPhoneError"></span>
+
+          <!-- OTP Entry Row (hidden until OTP sent) -->
+          <div class="hc-input-row" id="hcOtpInputRow" style="display:none; margin-top:8px;">
+            <input class="hc-input" type="text" id="hcOtpCode" placeholder="Enter 6-digit OTP"
+                   maxlength="6" inputmode="numeric" />
+            <button class="hc-otp-btn" type="button" onclick="verifyOTP()">Verify</button>
+          </div>
+          <span class="hc-field-error" id="hcOtpError"></span>
+
+          <!-- Verified badge -->
+          <div class="otp-verified-badge" id="hcOtpVerifiedBadge">
+            <span>✅</span>
+            <span>Phone number verified</span>
+          </div>
+        </div>
+
+        <!-- Emergency Contact -->
+        <div class="hc-field">
+          <label class="hc-label" for="hcEmergency">Emergency Contact Number <span class="required-star">*</span></label>
+          <input class="hc-input" type="tel" id="hcEmergency" name="emergency_contact"
+                 placeholder="+91 9000 000000" autocomplete="tel" />
+          <span class="hc-field-error" id="hcEmergencyError"></span>
+        </div>
+
+        <!-- Next -->
+        <div class="hc-btn-row">
+          <button class="hc-btn-back" type="button" onclick="prevStep()" disabled title="Back">←</button>
+          <button class="hc-btn-primary" type="button" id="hcNextStep1" onclick="nextStep()">
+            <span class="hc-btn-label">Continue →</span>
+            <div class="hc-btn-spinner"></div>
+          </button>
+        </div>
+
+      </div><!-- /hcStep1 -->
+
+
+      <!-- ══════════════════════════════════════
+           STEP 2 — DEPARTMENT & ROLE
+           ══════════════════════════════════════ -->
+      <div class="hc-step-panel" id="hcStep2">
+
+        <div class="hc-step-header">
+          <span class="hc-step-tag">Step 2 of 4</span>
+          <h2 class="hc-step-title">Select your department &amp; role</h2>
+          <p class="hc-step-sub">Choose the department you belong to — your role options will update automatically.</p>
+        </div>
+
+        <!-- Department Cards -->
+        <div class="hc-field">
+          <label class="hc-label">Department <span class="required-star">*</span></label>
+          <div class="hc-dept-cards" id="hcDeptCards">
+            <!-- Built dynamically by hc-auth.js buildDeptCards() -->
+          </div>
+          <span class="hc-field-error" id="hcDeptError"></span>
+        </div>
+
+        <!-- Cascading Role Dropdown -->
+        <div class="hc-field hc-role-select-wrap" id="hcRoleSelectWrap">
+          <label class="hc-label" for="hcRoleSelect">Role / Designation <span class="required-star">*</span></label>
+          <div class="hc-select-wrap">
+            <select class="hc-select" id="hcRoleSelect" name="role_id">
+              <option value="">— Select your role —</option>
+            </select>
+          </div>
+          <span class="hc-field-error" id="hcRoleError"></span>
+        </div>
+
+        <!-- Facility Name -->
+        <div class="hc-field">
+          <label class="hc-label" for="hcFacility">Facility / Hospital / NGO Name <span class="required-star">*</span></label>
+          <input class="hc-input" type="text" id="hcFacility" name="facility_name"
+                 placeholder="e.g. Apollo Hospitals, Janani NGO, PHC Anand" />
+          <span class="hc-field-error" id="hcFacilityError"></span>
+        </div>
+
+        <div class="hc-btn-row">
+          <button class="hc-btn-back" type="button" onclick="prevStep()" title="Back">←</button>
+          <button class="hc-btn-primary" type="button" onclick="nextStep()">
+            <span class="hc-btn-label">Continue →</span>
+            <div class="hc-btn-spinner"></div>
+          </button>
+        </div>
+
+      </div><!-- /hcStep2 -->
+
+
+      <!-- ══════════════════════════════════════
+           STEP 3 — PROFESSIONAL CREDENTIALS
+           ══════════════════════════════════════ -->
+      <div class="hc-step-panel" id="hcStep3">
+
+        <div class="hc-step-header">
+          <span class="hc-step-tag">Step 3 of 4</span>
+          <h2 class="hc-step-title">Professional credentials</h2>
+          <p class="hc-step-sub">Required for clinical and allied health professionals. Documents are reviewed by our verification team.</p>
+        </div>
+
+        <!-- Skip notice for Personal Care Network -->
+        <div class="hc-skip-notice" id="hcStep3SkipNotice" style="display:none;">
+          <span>ℹ️</span>
+          <span>Your selected department does not require professional credentials. This step has been skipped automatically.</span>
+        </div>
+
+        <!-- Medical License No. -->
+        <div class="hc-field">
+          <label class="hc-label" for="hcLicenseNo">Medical Reg. / License Number <span class="required-star">*</span></label>
+          <input class="hc-input" type="text" id="hcLicenseNo" name="license_number"
+                 placeholder="e.g. MCI-2024-MH-04521" />
+          <span class="hc-field-error" id="hcLicenseNoError"></span>
+        </div>
+
+        <!-- Licensing Body -->
+        <div class="hc-field">
+          <label class="hc-label" for="hcLicenseBody">State Medical Council / Licensing Body <span class="required-star">*</span></label>
+          <div class="hc-select-wrap">
+            <select class="hc-select" id="hcLicenseBody" name="licensing_body">
+              <option value="">— Select licensing body —</option>
+              <option>Medical Council of India (MCI / NMC)</option>
+              <option>Maharashtra Medical Council</option>
+              <option>Tamil Nadu Medical Council</option>
+              <option>Karnataka Medical Council</option>
+              <option>Delhi Medical Council</option>
+              <option>West Bengal Medical Council</option>
+              <option>Telangana Medical Council</option>
+              <option>Gujarat Medical Council</option>
+              <option>Rajasthan Medical Council</option>
+              <option>Indian Nursing Council (INC)</option>
+              <option>Indian Dietetic Association (IDA)</option>
+              <option>Indian Association of Physiotherapists (IAP)</option>
+              <option>State Health Department (ASHA/ANM)</option>
+              <option>Other / State Council</option>
+            </select>
+          </div>
+          <span class="hc-field-error" id="hcLicenseBodyError"></span>
+        </div>
+
+        <!-- Document Upload -->
+        <div class="hc-field">
+          <label class="hc-label">Upload License / ID Document <span class="required-star">*</span></label>
+          <div class="hc-upload-zone" id="hcUploadZone">
+            <input type="file" id="hcLicenseFile" name="license_doc"
+                   accept=".pdf,.jpg,.jpeg,.png" onchange="onFileChange(this)" />
+            <div class="hc-upload-icon">📎</div>
+            <div class="hc-upload-title">Drag &amp; drop or click to upload</div>
+            <div class="hc-upload-sub">PDF, JPEG, or PNG — max 5 MB</div>
+          </div>
+          <div class="hc-upload-selected" id="hcUploadSelected">
+            <span>✅</span>
+            <span class="upload-name"></span>
+          </div>
+          <span class="hc-field-error" id="hcUploadError"></span>
+        </div>
+
+        <div class="hc-btn-row">
+          <button class="hc-btn-back" type="button" onclick="prevStep()" title="Back">←</button>
+          <button class="hc-btn-primary" type="button" onclick="nextStep()">
+            <span class="hc-btn-label">Continue →</span>
+            <div class="hc-btn-spinner"></div>
+          </button>
+        </div>
+
+      </div><!-- /hcStep3 -->
+
+
+      <!-- ══════════════════════════════════════
+           STEP 4 — SECURITY & AUTH
+           ══════════════════════════════════════ -->
+      <div class="hc-step-panel" id="hcStep4">
+
+        <div class="hc-step-header">
+          <span class="hc-step-tag">Step 4 of 4</span>
+          <h2 class="hc-step-title">Set up your security</h2>
+          <p class="hc-step-sub">Create a strong password and optionally enable two-factor authentication.</p>
+        </div>
+
+        <!-- Password -->
+        <div class="hc-field">
+          <label class="hc-label" for="hcPassword">Password <span class="required-star">*</span></label>
+          <div class="hc-pwd-wrap">
+            <input class="hc-input" type="password" id="hcPassword" name="password"
+                   placeholder="Min. 12 chars with upper, lower, number, symbol"
+                   autocomplete="new-password" />
+            <button class="hc-pwd-eye" type="button" onclick="togglePwd('hcPassword', this)" title="Show/hide">👁</button>
+          </div>
+          <!-- Strength Meter -->
+          <div class="hc-strength-wrap">
+            <div class="hc-strength-bar-track">
+              <div class="hc-strength-bar" id="hcStrengthBar"></div>
+            </div>
+            <span class="hc-strength-label" id="hcStrengthLabel"></span>
+            <div class="strength-rules" aria-live="polite">
+              <div class="strength-rule" id="rule_len"><div class="rule-icon"></div>12+ characters</div>
+              <div class="strength-rule" id="rule_upper"><div class="rule-icon"></div>Uppercase letter</div>
+              <div class="strength-rule" id="rule_lower"><div class="rule-icon"></div>Lowercase letter</div>
+              <div class="strength-rule" id="rule_num"><div class="rule-icon"></div>Number (0–9)</div>
+              <div class="strength-rule" id="rule_sym"><div class="rule-icon"></div>Special symbol</div>
+            </div>
+          </div>
+          <span class="hc-field-error" id="hcPasswordError"></span>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="hc-field">
+          <label class="hc-label" for="hcConfirm">Confirm Password <span class="required-star">*</span></label>
+          <div class="hc-pwd-wrap">
+            <input class="hc-input" type="password" id="hcConfirm" name="password_confirm"
+                   placeholder="Re-enter your password" autocomplete="new-password" />
+            <button class="hc-pwd-eye" type="button" onclick="togglePwd('hcConfirm', this)" title="Show/hide">👁</button>
+          </div>
+          <span class="hc-field-error" id="hcConfirmError"></span>
+        </div>
+
+        <!-- 2FA Toggle -->
+        <div class="hc-2fa-card" id="hc2FACard">
+          <div class="hc-2fa-header">
+            <div>
+              <div class="hc-2fa-title">🔐 Two-Factor Authentication (2FA)</div>
+              <div class="hc-2fa-sub">Strongly recommended for clinical staff</div>
+            </div>
+            <label class="hc-toggle">
+              <input type="checkbox" id="hc2FAToggle" onchange="on2FAToggle(this)" />
+              <span class="hc-toggle-slider"></span>
+            </label>
+          </div>
+          <div class="hc-2fa-options" id="hc2FAOptions">
+            <label class="hc-2fa-option">
+              <input type="radio" name="two_fa_method" value="sms" onchange="on2FAMethodSelect('sms')" />
+              <div>
+                <div class="hc-2fa-option-label">📱 SMS OTP</div>
+                <div class="hc-2fa-option-sub">One-time code sent to your verified phone</div>
+              </div>
+            </label>
+            <label class="hc-2fa-option">
+              <input type="radio" name="two_fa_method" value="authenticator" onchange="on2FAMethodSelect('authenticator')" />
+              <div>
+                <div class="hc-2fa-option-label">🔑 Authenticator App</div>
+                <div class="hc-2fa-option-sub">Google Authenticator, Authy, or Microsoft Authenticator</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <form onsubmit="submitRegistration(event)">
+          <div class="hc-btn-row" style="margin-top:4px;">
+            <button class="hc-btn-back" type="button" onclick="prevStep()" title="Back">←</button>
+            <button class="hc-btn-submit" type="submit" id="hcSubmitBtn">
+              <span class="hc-btn-label">🏥 Create Healthcare Account</span>
+              <div class="hc-btn-spinner"></div>
+            </button>
+          </div>
+        </form>
+
+        <!-- HIPAA note -->
+        <p class="hc-footer-note" style="margin-top:12px; font-size:11px; line-height:1.6;">
+          🔒 Your data is encrypted and stored in compliance with <strong>HIPAA</strong> &amp; <strong>DISHA</strong>
+          data protection standards. Clinical accounts require verification before access is granted.
+        </p>
+
+      </div><!-- /hcStep4 -->
+
+    </div><!-- /.hc-card -->
+
+    <!-- Footer -->
+    <p class="hc-footer-note" style="margin-top:24px;">
+      Already have an account?
+      <a href="../index.html?action=provider-login">Login to Healthcare Portal →</a>
+    </p>
+
+  </div><!-- /.hc-page -->
+
+  <script src="js/hc-auth.js"></script>
+</body>
+</html>

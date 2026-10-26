@@ -1,0 +1,18 @@
+# Local credentials and environment files
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# User-uploaded content
+/.uploads/
+/uploads/
+
+# Installed dependencies and generated output
+**/node_modules/
+healthcare-auth/server/dist/
+
+# Contains bootstrap account credentials
+healthcare-auth/superadmin_setup.sql

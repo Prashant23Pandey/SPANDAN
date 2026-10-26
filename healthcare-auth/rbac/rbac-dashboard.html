@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MaaCare — Clinical Dashboard</title>
+  <meta name="description" content="MaaCare multi-role healthcare provider dashboard — secure, role-gated clinical workspace." />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="stylesheet" href="rbac.css" />
+  <link rel="stylesheet" href="profile-settings.css" />
+</head>
+<body>
+
+<!-- ======================================================================
+     RBAC App Shell
+     ====================================================================== -->
+<div id="rbac-app">
+
+  <!-- ── Top Navigation Bar ─────────────────────────────────────────────── -->
+  <nav id="rbac-topnav" role="navigation" aria-label="Global navigation">
+
+    <button id="sidebar-mobile-toggle" aria-label="Open menu" style="display:none">☰</button>
+
+    <a href="#" class="topnav-brand">
+      <span class="brand-icon">🌸</span>
+      <div>
+        <div class="brand-name">MaaCare</div>
+        <div class="brand-tag">CLINICAL WORKSPACE</div>
+      </div>
+    </a>
+
+    <div class="topnav-center">
+      <span id="rbac-facility-indicator">🌐 Loading...</span>
+    </div>
+
+    <div class="topnav-actions">
+      <span id="rbac-role-badge" style="--role-color:#E07A5F">Loading...</span>
+
+      <div class="account-switcher">
+        <button id="account-menu-trigger" class="account-menu-btn" aria-haspopup="true" aria-expanded="false">
+          <div id="rbac-avatar">U</div>
+          <span id="rbac-user-name">...</span>
+          <span class="account-menu-chevron">▾</span>
+        </button>
+
+        <div id="account-dropdown-menu" role="menu">
+          <a href="#account" class="dropdown-item" id="account-settings-link" role="menuitem">⚙️ Account Settings</a>
+          <a href="#account" class="dropdown-item" id="notif-prefs-link" role="menuitem">🔔 Notifications</a>
+          <a href="#" class="dropdown-item" role="menuitem">❓ Help & Support</a>
+          <div class="dropdown-divider"></div>
+          <button id="rbac-logout-btn" class="dropdown-item danger" role="menuitem">🚪 Sign Out</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── Sidebar Navigation ─────────────────────────────────────────────── -->
+  <aside id="rbac-sidebar" role="complementary" aria-label="Role navigation">
+
+    <div class="sidebar-profile">
+      <div class="sidebar-avatar-row">
+        <div class="sidebar-avatar" id="sidebar-avatar-sm">U</div>
+        <div>
+          <div id="sidebar-user-name">Loading...</div>
+          <div id="sidebar-role-label">Connecting...</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="Dashboard navigation">
+      <div class="sidebar-nav-section">Navigation</div>
+      <ul id="sidebar-nav-list" role="menu">
+        <!-- Dynamically rendered by rbac-sidebar.js -->
+        <li><a href="#" class="sidebar-nav-link"><span class="nav-icon">⏳</span><span class="nav-label">Loading...</span></a></li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button id="rbac-logout-btn-sidebar" class="dropdown-item danger" onclick="document.getElementById('rbac-logout-btn').click()">
+        🚪 Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── Sidebar Mobile Overlay ─────────────────────────────────────────── -->
+  <div id="sidebar-overlay" role="presentation"></div>
+
+  <!-- ====================================================================
+       Main Content — Role-Gated Views
+       ==================================================================== -->
+  <main id="rbac-main" role="main">
+
+    <!-- ================================================================
+         VIEW 1: SUPER ADMIN
+         ================================================================ -->
+    <section id="view-super-admin" class="rbac-view" aria-hidden="true">
+      <div class="view-header">
+        <div class="view-title-group">
+          <div class="view-eyebrow" style="color:var(--c-super)">🔐 System Administration</div>
+          <h1 class="view-title">Platform Command Center</h1>
+          <p class="view-subtitle">Real-time system telemetry, global user governance, security operations</p>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn-secondary-role" style="--role-color:var(--c-super)">📥 Export Report</button>
+          <button class="btn-primary-role"   style="--role-color:var(--c-super)">➕ Add Hospital</button>
+        </div>
+      </div>
+
+      <div class="kpi-grid" style="--role-color:var(--c-super)">
+        <div class="kpi-card"><span class="kpi-icon">👥</span><div class="kpi-label">Total Platform Users</div><div class="kpi-value">12,847</div><div class="kpi-trend">↑ +3.2% this month</div></div>
+        <div class="kpi-card"><span class="kpi-icon">✅</span><div class="kpi-label">Pending Verifications</div><div class="kpi-value">34</div><div class="kpi-trend" style="color:#D97706">⚠ Requires review</div></div>
+        <div class="kpi-card"><span class="kpi-icon">🏥</span><div class="kpi-label">Active Hospitals</div><div class="kpi-value">218</div><div class="kpi-trend">↑ +2 this week</div></div>
+        <div class="kpi-card"><span class="kpi-icon">🔒</span><div class="kpi-label">Security Alerts (24h)</div><div class="kpi-value">7</div><div class="kpi-trend" style="color:#DC2626">↑ Review needed</div></div>
+      </div>
+
+      <div class="content-grid">
+        <!-- Verification Queue -->
+        <div class="col-7 panel-card">
+          <div class="panel-header">
+            <div class="panel-title">✅ Hospital Verification Queue</div>
+            <button class="panel-action-btn">View All →</button>
+          </div>
+          <div class="panel-body" style="padding:0">
+            <table class="rbac-table">
+              <thead><tr><th>Hospital</th><th>Submitted</th><th>Docs</th><th>Status</th><th></th></tr></thead>
+              <tbody>
+                <tr><td><strong>Apollo Maternity Delhi</strong></td><td>Aug 24</td><td>3/3</td><td><span class="status-badge status-pending">⏳ Pending</span></td><td><button class="panel-action-btn">Review</button></td></tr>
+                <tr><td><strong>Fortis Women's Care Mumbai</strong></td><td>Aug 23</td><td>3/3</td><td><span class="status-badge status-pending">⏳ Pending</span></td><td><button class="panel-action-btn">Review</button></td></tr>
+                <tr><td><strong>AIIMS Obstetrics Unit</strong></td><td>Aug 21</td><td>2/3</td><td><span class="status-badge status-offline">📎 Incomplete</span></td><td><button class="panel-action-btn">Request</button></td></tr>
+                <tr><td><strong>Narayana Women's Bangalore</strong></td><td>Aug 20</td><td>3/3</td><td><span class="status-badge status-active">✅ Approved</span></td><td><button class="panel-action-btn">View</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- System Metrics -->
+        <div class="col-5 panel-card">
+          <div class="panel-header"><div class="panel-title">📊 System Metrics</div></div>
+          <div class="panel-body">
+            <div class="metric-row"><span class="metric-name">API Uptime</span><span class="metric-value" style="color:#059669">99.98%</span></div>
+            <div class="metric-row"><span class="metric-name">Avg Response Time</span><span class="metric-value">142ms</span></div>
+            <div class="metric-row"><span class="metric-name">DB Query Load</span><span class="metric-value">38%</span></div>
+            <div class="metric-row"><span class="metric-name">Active Sessions</span><span class="metric-value">1,204</span></div>
+            <div class="metric-row"><span class="metric-name">Failed Logins (24h)</span><span class="metric-value" style="color:#DC2626">29</span></div>
+            <div class="metric-row"><span class="metric-name">Data Processed</span><span class="metric-value">4.2 GB</span></div>
+          </div>
+        </div>
+
+        <!-- Audit Log -->
+        <div class="col-12 panel-card">
+          <div class="panel-header"><div class="panel-title">📋 Live Audit Log</div><button class="panel-action-btn">Download CSV</button></div>
+          <div class="panel-body" style="padding:0">
+            <table class="rbac-table">
+              <thead><tr><th>Timestamp</th><th>User</th><th>Action</th><th>Resource</th><th>IP</th><th>Outcome</th></tr></thead>
+              <tbody>
+                <tr><td class="kpi-label">23:38:14</td><td>admin@maacare.in</td><td>LOGIN</td><td>AUTH</td><td>103.45.22.1</td><td><span class="status-badge status-active">✅ OK</span></td></tr>
+                <tr><td class="kpi-label">23:35:02</td><td>dr.mehta@apollo.com</td><td>READ EHR</td><td>Patient #4421</td><td>122.160.3.44</td><td><span class="status-badge status-active">✅ OK</span></td></tr>
+                <tr><td class="kpi-label">23:31:58</td><td>unknown@extern.net</td><td>LOGIN</td><td>AUTH</td><td>185.220.101.4</td><td><span class="status-badge status-critical">🚫 BLOCKED</span></td></tr>
+                <tr><td class="kpi-label">23:28:41</td><td>hr@fortis.com</td><td>STAFF ADD</td><td>Facility #22</td><td>49.36.88.12</td><td><span class="status-badge status-active">✅ OK</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         VIEW 2: HOSPITAL ADMIN
+         ================================================================ -->
+    <section id="view-hospital-admin" class="rbac-view" aria-hidden="true">
+      <div class="view-header">
+        <div class="view-title-group">
+          <div class="view-eyebrow" style="color:var(--c-hospital)">🏥 Hospital Administration</div>
+          <h1 class="view-title">Facility Operations Dashboard</h1>
+          <p class="view-subtitle">Staff management, patient assignments, bed tracking, and facility analytics</p>
+        </div>
+        <button class="btn-primary-role" style="--role-color:var(--c-hospital)">➕ Onboard Staff</button>
+      </div>
+
+      <div class="kpi-grid" style="--role-color:var(--c-hospital)">
+        <div class="kpi-card"><span class="kpi-icon">👨‍⚕️</span><div class="kpi-label">Total Active Staff</div><div class="kpi-value">84</div><div class="kpi-trend">↑ +2 this week</div></div>
+        <div class="kpi-card"><span class="kpi-icon">🤝</span><div class="kpi-label">Patient Assignments</div><div class="kpi-value">312</div><div class="kpi-trend">Across 12 doctors</div></div>
+        <div class="kpi-card"><span class="kpi-icon">🛏️</span><div class="kpi-label">Bed Occupancy</div><div class="kpi-value">73%</div><div class="kpi-trend" style="color:#D97706">⚠ Near capacity</div></div>
+        <div class="kpi-card"><span class="kpi-icon">🏥</span><div class="kpi-label">ICU Beds Available</div><div class="kpi-value">8</div><div class="kpi-trend" style="color:#059669">✓ Stable</div></div>
+      </div>
+
+      <div class="content-grid">
+        <div class="col-6 panel-card">
+          <div class="panel-header"><div class="panel-title">🛏️ Bed & ICU Capacity</div></div>
+          <div class="panel-body">
+            <div class="capacity-bar-wrap"><div class="capacity-label"><span>Maternity Ward</span><span>28/36 beds</span></div><div class="capacity-bar"><div class="capacity-fill warning" style="width:78%"></div></div></div>
+            <div class="capacity-bar-wrap"><div class="capacity-label"><span>ICU / NICU</span><span>12/20 beds</span></div><div class="capacity-bar"><div class="capacity-fill good" style="width:60%"></div></div></div>
+            <div class="capacity-bar-wrap"><div class="capacity-label"><span>Recovery Ward</span><span>18/20 beds</span></div><div class="capacity-bar"><div class="capacity-fill critical" style="width:90%"></div></div></div>
+            <div class="capacity-bar-wrap"><div class="capacity-label"><span>OPD Consultation</span><span>6/15 rooms</span></div><div class="capacity-bar"><div class="capacity-fill good" style="width:40%"></div></div></div>
+          </div>
+        </div>
+
+        <div class="col-6 panel-card">
+          <div class="panel-header"><div class="panel-title">👨‍⚕️ Staff Directory</div><button class="panel-action-btn">Manage All →</button></div>
+          <div class="panel-body" style="padding:0">
+            <table class="rbac-table">
+              <thead><tr><th>Name</th><th>Role</th><th>Patients</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Dr. Priya Mehta</strong></td><td>OB-GYN</td><td>28</td><td><span class="status-badge status-active">Active</span></td></tr>
+                <tr><td><strong>Dr. Arjun Rao</strong></td><td>Neonatologist</td><td>14</td><td><span class="status-badge status-active">Active</span></td></tr>
+                <tr><td><strong>Ms. Kavya Singh</strong></td><td>Nutritionist</td><td>22</td><td><span class="status-badge status-active">Active</span></td></tr>
+                <tr><td><strong>Mr. Ravi Kumar</strong></td><td>Field Worker</td><td>41</td><td><span class="status-badge status-offline">On Leave</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="col-12 panel-card">
+          <div class="panel-header"><div class="panel-title">🔗 Doctor–Patient Assignment Matrix</div><button class="panel-action-btn">Edit Assignments →</button></div>
+          <div class="panel-body" style="padding:0">
+            <table class="rbac-table">
+              <thead><tr><th>Doctor</th><th>Specialty</th><th>High Risk</th><th>Normal</th><th>Post-Op</th><th>Total Load</th></tr></thead>
+              <tbody>
+                <tr><td>Dr. Priya Mehta</td><td>OB-GYN</td><td>8</td><td>16</td><td>4</td><td><span class="metric-value">28</span></td></tr>
+                <tr><td>Dr. Arjun Rao</td><td>Neonatology</td><td>6</td><td>5</td><td>3</td><td><span class="metric-value">14</span></td></tr>
+                <tr><td>Dr. Sunita Joshi</td><td>Maternal-Fetal</td><td>12</td><td>10</td><td>2</td><td><span class="metric-value">24</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         VIEW 3: CLINICAL / DOCTOR
+         ================================================================ -->
+    <section id="view-clinical" class="rbac-view" aria-hidden="true">
+      <div class="view-header">
+        <div class="view-title-group">
+          <div class="view-eyebrow" style="color:var(--c-doctor)">🩺 Clinical Console</div>
+          <h1 class="view-title">Doctor's Workspace</h1>
+          <p class="view-subtitle">Tele-consultation, patient queue, live vitals, EHR, and e-Prescriptions</p>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn-secondary-role">📋 New EHR Entry</button>
+          <button class="btn-primary-role" style="--role-color:var(--c-doctor)">📹 Start Tele-Consult</button>
+        </div>
+      </div>
+
+      <div class="kpi-grid" style="--role-color:var(--c-doctor)">
+        <div class="kpi-card"><span class="kpi-icon">📅</span><div class="kpi-label">Patients in Queue</div><div class="kpi-value">7</div><div class="kpi-trend">Next: 9:30 AM</div></div>
+        <div class="kpi-card"><span class="kpi-icon">📹</span><div class="kpi-label">Teleconsults Today</div><div class="kpi-value">12</div><div class="kpi-trend">↑ +4 vs yesterday</div></div>
+        <div class="kpi-card"><span class="kpi-icon">💊</span><div class="kpi-label">Prescriptions Issued</div><div class="kpi-value">18</div><div class="kpi-trend">This week</div></div>
+        <div class="kpi-card"><span class="kpi-icon">💓</span><div class="kpi-label">Vitals Alerts</div><div class="kpi-value" style="color:#DC2626">3</div><div class="kpi-trend" style="color:#DC2626">⚠ Needs attention</div></div>
+      </div>
+
+      <div class="content-grid">
+        <!-- Patient Queue -->
+        <div class="col-7 panel-card">
+          <div class="panel-header"><div class="panel-title">📅 Today's Patient Queue</div><button class="panel-action-btn">Full Schedule →</button></div>
+          <div class="panel-body" style="padding:0">
+            <table class="rbac-table">
+              <thead><tr><th>Patient</th><th>Week</th><th>Appt. Time</th><th>Type</th><th>Status</th><th></th></tr></thead>
+              <tbody>
+                <tr><td><strong>Ananya Sharma</strong></td><td>W28</td><td>9:30 AM</td><td>Routine</td><td><span class="status-badge status-pending">⏳ Waiting</span></td><td><button class="panel-action-btn">Call In</button></td></tr>
+                <tr><td><strong>Meera Patel</strong></td><td>W34</td><td>10:00 AM</td><td>High Risk</td><td><span class="status-badge status-critical">🔴 Urgent</span></td><td><button class="panel-action-btn">View EHR</button></td></tr>
+                <tr><td><strong>Radha Iyer</strong></td><td>W20</td><td>10:30 AM</td><td>Tele-Consult</td><td><span class="status-badge status-offline">📍 Remote</span></td><td><button class="panel-action-btn">Join Call</button></td></tr>
+                <tr><td><strong>Sunita Verma</strong></td><td>W38</td><td>11:00 AM</td><td>Post-Op</td><td><span class="status-badge status-active">✅ Confirmed</span></td><td><button class="panel-action-btn">Prepare</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Live Vitals Drawer -->
+        <div class="col-5 panel-card" style="--role-color:var(--c-doctor)">
+          <div class="panel-header"><div class="panel-title">💓 Live Wearable Vitals</div><span class="status-badge status-active">● LIVE</span></div>
+          <div class="panel-body">
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Meera Patel — Pregnancy Week 34</div>
+            <div class="metric-row"><span class="metric-name">Heart Rate</span><span class="metric-value">94 bpm</span></div>
+            <div class="metric-row"><span class="metric-name">Blood Pressure</span><span class="metric-value" style="color:#DC2626">148/92 mmHg ⚠</span></div>
+            <div class="metric-row"><span class="metric-name">SpO₂</span><span class="metric-value">97%</span></div>
+            <div class="metric-row"><span class="metric-name">Fetal Heart Rate</span><span class="metric-value">138 bpm</span></div>
+            <div class="metric-row"><span class="metric-name">Temperature</span><span class="metric-value">37.2°C</span></div>
+            <div style="margin-top:16px">
+              <button class="btn-primary-role" style="--role-color:var(--c-doctor);width:100%;justify-content:center">📋 Generate Alert Note</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- EHR & e-Prescription -->
+        <div class="col-6 panel-card">
+          <div class="panel-header"><div class="panel-title">📂 Recent EHR Records</div><button class="panel-action-btn">New Entry →</button></div>
+          <div class="panel-body">
+            <div class="feed-item"><div class="feed-dot" style="background:var(--c-doctor)"></div><div class="feed-content"><div class="feed-text">Meera Patel — Hypertension flag added</div><div class="feed-meta">Today, 9:02 AM • Dr. Priya Mehta</div></div></div>
+            <div class="feed-item"><div class="feed-dot"></div><div class="feed-content"><div class="feed-text">Ananya Sharma — Week 28 scan results uploaded</div><div class="feed-meta">Yesterday, 4:15 PM</div></div></div>
+            <div class="feed-item"><div class="feed-dot"></div><div class="feed-content"><div class="feed-text">Radha Iyer — Tele-consult summary saved</div><div class="feed-meta">Aug 25, 11:30 AM</div></div></div>
+          </div>
+        </div>
+
+        <div class="col-6 panel-card">
+          <div class="panel-header"><div class="panel-title">💊 e-Prescription Generator</div></div>
+          <div class="panel-body">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div><label style="font-size:12px;font-weight:700;color:var(--text-muted)">PATIENT</label><div style="margin-top:4px;font-size:13.5px;font-weight:600">Meera Patel — Reg #4421</div></div>
+              <div><label style="font-size:12px;font-weight:700;color:var(--text-muted)">DRUG</label><input placeholder="Medication name..." style="width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font);font-size:13.5px;margin-top:4px" /></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <div><label style="font-size:12px;font-weight:700;color:var(--text-muted)">DOSAGE</label><input placeholder="e.g. 500mg" style="width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font);font-size:13.5px;margin-top:4px" /></div>
+                <div><label style="font-size:12px;font-weight:700;color:var(--text-muted)">DURATION</label><input placeholder="e.g. 7 days" style="width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font);font-size:13.5px;margin-top:4px" /></div>
+              </div>
+              <button class="btn-primary-role" style="--role-color:var(--c-doctor);justify-content:center;margin-top:4px">💊 Generate & Send Prescription</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         VIEW 4: ALLIED HEALTH
+         ================================================================ -->
+    <section id="view-allied" class="rbac-view" aria-hidden="true">
+      <div class="view-header">
+        <div class="view-title-group">
+          <div class="view-eyebrow" style="color:var(--c-allied)">🧘 Allied Health & Wellness</div>
+          <h1 class="view-title">Therapy & Support Dashboard</h1>
+          <p class="view-subtitle">Nutrition planning, mental health tracking, patient chat, and webinars</p>
+        </div>
+        <button class="btn-primary-role" style="--role-color:var(--c-allied)">➕ New Session</button>
+      </div>
+
+      <div class="kpi-grid" style="--role-color:var(--c-allied)">
+        <div class="kpi-card"><span class="kpi-icon">🥗</span><div class="kpi-label">Active Diet Plans</div><div class="kpi-value">23</div><div class="kpi-trend">3 updates pending</div></div>
+        <div class="kpi-card"><span class="kpi-icon">🧠</span><div class="kpi-label">MH Sessions Today</div><div class="kpi-value">5</div><div class="kpi-trend">Next at 2:00 PM</div></div>
+        <div class="kpi-card"><span class="kpi-icon">💬</span><div class="kpi-label">Unread Messages</div><div class="kpi-value">14</div><div class="kpi-trend" style="color:#D97706">⚠ Needs response</div></div>
+        <div class="kpi-card"><span class="kpi-icon">🎥</span><div class="kpi-label">Upcoming Webinars</div><div class="kpi-value">2</div><div class="kpi-trend">This week</div></div>
+      </div>
+
+      <div class="content-grid">
+        <div class="col-6 panel-card">
+          <div class="panel-header"><div class="panel-title">🥗 Trimester Diet Builder</div><button class="panel-action-btn">New Plan →</button></div>
+          <div class="panel-body">
+            <div class="feed-item"><div class="feed-dot" style="background:var(--c-allied)"></div><div class="feed-content"><div class="feed-text">Ananya Sharma — T2 Iron-Rich Plan active</div><div class="feed-meta">Adjusted today • Week 28</div></div></div>
+            <div class="feed-item"><div class="feed-dot"></div><div class="feed-content"><div class="feed-text">Kavya Reddy — T3 Calcium supplement added</div><div class="feed-meta">Yesterday • Week 36</div></div></div>
+            <div class="feed-item"><div class="feed-dot"></div><div class="feed-content"><div class="feed-text">Sunita Roy — Post-natal recovery diet assigned</div><div class="feed-meta">Aug 24</div></div></div>
+          </div>
+        </div>
+
+        <div class="col-6 panel-card">
+          <div class="panel-header"><div class="panel-title">🧠 Prenatal Mental Health Tracker</div></div>
+          <div class="panel-body">
+            <div class="capacity-bar-wrap"><div class="capacity-label"><span>Ananya — Anxiety Score</span><span>4/10</span></div><div class="capacity-bar"><div class="capacity-fill good" style="width:40%"></div></div></div>
+            <div class="capacity-bar-wrap"><div class="capacity-label"><span>Meera — Depression Screening</span><span>7/10</span></div><div class="capacity-bar"><div class="capacity-fill critical" style="width:70%"></div></div></div>
+            <div class="capacity-bar-wrap"><div class="capacity-label"><span>Radha — Stress Index</span><span>5/10</span></div><div class="capacity-bar"><div class="capacity-fill warning" style="width:50%"></div></div></div>
+          </div>
+        </div>
+
+        <div class="col-12 panel-card">
+          <div class="panel-header"><div class="panel-title">🎥 Webinar Scheduler</div><button class="panel-action-btn">Create Webinar →</button></div>
+          <div class="panel-body" style="padding:0">
+            <table class="rbac-table">
+              <thead><tr><th>Topic</th><th>Date & Time</th><th>Registered</th><th>Format</th><th></th></tr></thead>
+              <tbody>
+                <tr><td><strong>Breastfeeding Fundamentals for New Mothers</strong></td><td>Aug 29 · 3:00 PM</td><td>34</td><td>Live</td><td><button class="panel-action-btn">Manage</button></td></tr>
+                <tr><td><strong>Managing Prenatal Anxiety — Mindfulness Workshop</strong></td><td>Sep 2 · 5:00 PM</td><td>19</td><td>Live</td><td><button class="panel-action-btn">Manage</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         VIEW 5: FIELD WORKER / ASHA
+         ================================================================ -->
+    <section id="view-field" class="rbac-view" aria-hidden="true">
+      <div class="view-header">
+        <div class="view-title-group">
+          <div class="view-eyebrow" style="color:var(--c-field)">🌾 Community & Field Care</div>
+          <h1 class="view-title">Field Worker Dashboard</h1>
+          <p class="view-subtitle">Patient registry, home visits, welfare schemes, emergency referrals</p>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <span class="status-badge status-active">📶 Online Mode</span>
+          <button class="btn-primary-role" style="--role-color:var(--c-field)">🚑 Emergency Referral</button>
+        </div>
+      </div>
+
+      <div class="kpi-grid" style="--role-color:var(--c-field)">
+        <div class="kpi-card"><span class="kpi-icon">📋</span><div class="kpi-label">Registered Patients</div><div class="kpi-value">156</div><div class="kpi-trend">12 new this month</div></div>
+        <div class="kpi-card"><span class="kpi-icon">🏠</span><div class="kpi-label">Home Visits Today</div><div class="kpi-value">4</div><div class="kpi-trend">2 remaining</div></div>
+        <div class="kpi-card"><span class="kpi-icon">🏛️</span><div class="kpi-label">Welfare Enrollments</div><div class="kpi-value">89</div><div class="kpi-trend">PM Matru Vandana</div></div>
+        <div class="kpi-card"><span class="kpi-icon">🚑</span><div class="kpi-label">Referrals Dispatched</div><div class="kpi-value">3</div><div class="kpi-trend">This week</div></div>
+      </div>
+
+      <div class="content-grid">
+        <div class="col-6 panel-card">
+          <div class="panel-header"><div class="panel-title">📋 Today's Home Visit Schedule</div></div>
+          <div class="panel-body" style="padding:0">
+            <table class="rbac-table">
+              <thead><tr><th>Patient</th><th>Village</th><th>Week</th><th>Time</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Savitri Devi</strong></td><td>Rampur</td><td>W32</td><td>10:00 AM</td><td><span class="status-badge status-active">✅ Done</span></td></tr>
+                <tr><td><strong>Kamla Bai</strong></td><td>Sultanpur</td><td>W28</td><td>12:00 PM</td><td><span class="status-badge status-active">✅ Done</span></td></tr>
+                <tr><td><strong>Parvati Yadav</strong></td><td>Jagdishpur</td><td>W36</td><td>3:00 PM</td><td><span class="status-badge status-pending">⏳ Pending</span></td></tr>
+                <tr><td><strong>Geeta Maurya</strong></td><td>Katehar</td><td>W24</td><td>5:00 PM</td><td><span class="status-badge status-pending">⏳ Pending</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="col-6 panel-card">
+          <div class="panel-header"><div class="panel-title">🏛️ Govt. Welfare Scheme Tracker</div></div>
+          <div class="panel-body">
+            <div class="capacity-bar-wrap"><div class="capacity-label"><span>PM Matru Vandana Yojana</span><span>67/100</span></div><div class="capacity-bar"><div class="capacity-fill good" style="width:67%"></div></div></div>
+            <div class="capacity-bar-wrap"><div class="capacity-label"><span>Janani Suraksha Yojana</span><span>45/80</span></div><div class="capacity-bar"><div class="capacity-fill warning" style="width:56%"></div></div></div>
+            <div class="capacity-bar-wrap"><div class="capacity-label"><span>Pradhan Mantri Surakshit Matritva</span><span>23/50</span></div><div class="capacity-bar"><div class="capacity-fill good" style="width:46%"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         VIEW 6: EMERGENCY RESPONSE
+         ================================================================ -->
+    <section id="view-emergency" class="rbac-view" aria-hidden="true">
+      <div class="view-header">
+        <div class="view-title-group">
+          <div class="view-eyebrow" style="color:var(--c-emergency)">🚨 Emergency Response Operations</div>
+          <h1 class="view-title">Emergency Command Dashboard</h1>
+          <p class="view-subtitle">Real-time SOS feed, ambulance dispatch, rapid patient card access</p>
+        </div>
+        <button class="btn-primary-role" style="--role-color:var(--c-emergency);animation:sosPulse 1.4s ease-in-out infinite">🆘 Declare Emergency</button>
+      </div>
+
+      <!-- Active SOS Alert Banner -->
+      <div class="sos-alert-card" style="--role-color:var(--c-emergency)">
+        <div class="sos-pulse">🆘</div>
+        <div>
+          <div class="sos-count">3</div>
+          <div class="sos-label">Active SOS Alerts — Immediate Response Required</div>
+        </div>
+        <button class="btn-secondary-role" style="margin-left:auto;border-color:rgba(255,255,255,0.4);color:#fff;background:rgba(255,255,255,0.15)">View All SOS →</button>
+      </div>
+
+      <div class="kpi-grid" style="--role-color:var(--c-emergency)">
+        <div class="kpi-card"><span class="kpi-icon">🆘</span><div class="kpi-label">Active SOS Alerts</div><div class="kpi-value" style="color:#DC2626">3</div><div class="kpi-trend" style="color:#DC2626">⚠ Urgent</div></div>
+        <div class="kpi-card"><span class="kpi-icon">🚑</span><div class="kpi-label">Ambulances Dispatched</div><div class="kpi-value">2</div><div class="kpi-trend">En route</div></div>
+        <div class="kpi-card"><span class="kpi-icon">⏱️</span><div class="kpi-label">Avg Response Time</div><div class="kpi-value">8 min</div><div class="kpi-trend" style="color:#059669">↓ -2 min vs avg</div></div>
+        <div class="kpi-card"><span class="kpi-icon">✅</span><div class="kpi-label">Patients Stabilized</div><div class="kpi-value">11</div><div class="kpi-trend">Today</div></div>
+      </div>
+
+      <div class="content-grid">
+        <!-- SOS Feed -->
+        <div class="col-5 panel-card">
+          <div class="panel-header"><div class="panel-title">🆘 Live SOS Feed</div><span class="status-badge status-critical">● LIVE</span></div>
+          <div class="panel-body">
+            <div class="feed-item"><div class="feed-dot" style="background:#DC2626"></div><div class="feed-content"><div class="feed-text">Savitri Devi — Heavy bleeding, W38</div><div class="feed-meta">Rampur Village • 2 min ago</div></div><button class="panel-action-btn" style="color:#DC2626;flex-shrink:0">Dispatch</button></div>
+            <div class="feed-item"><div class="feed-dot" style="background:#DC2626"></div><div class="feed-content"><div class="feed-text">Meera Patel — Pre-eclampsia, W34</div><div class="feed-meta">Apollo Hospital • 8 min ago</div></div><button class="panel-action-btn" style="color:#DC2626;flex-shrink:0">View</button></div>
+            <div class="feed-item"><div class="feed-dot" style="background:#D97706"></div><div class="feed-content"><div class="feed-text">Ananya Sharma — BP spike, W28</div><div class="feed-meta">Home • 22 min ago</div></div><button class="panel-action-btn">Monitor</button></div>
+          </div>
+        </div>
+
+        <!-- GPS Map -->
+        <div class="col-7 panel-card">
+          <div class="panel-header"><div class="panel-title">🗺️ Ambulance Dispatch Tracker</div><button class="panel-action-btn">Full Map →</button></div>
+          <div class="panel-body">
+            <div class="map-placeholder">
+              <div class="map-icon">🗺️</div>
+              <div>GPS Ambulance Dispatch Map</div>
+              <div style="font-size:12px;opacity:0.6">Live tracking — 2 units en route</div>
+            </div>
+            <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+              <span class="status-badge status-critical">🚑 Unit-01 → Rampur (ETA: 4 min)</span>
+              <span class="status-badge status-pending">🚑 Unit-03 → Apollo (ETA: 7 min)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rapid Card -->
+        <div class="col-12 panel-card">
+          <div class="panel-header"><div class="panel-title">🪪 Patient Emergency Rapid Card — Savitri Devi</div><button class="panel-action-btn">Print Card</button></div>
+          <div class="panel-body">
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;font-size:13px">
+              <div><div class="kpi-label">Blood Group</div><div style="font-size:20px;font-weight:800;margin-top:4px">B+</div></div>
+              <div><div class="kpi-label">Pregnancy Week</div><div style="font-size:20px;font-weight:800;margin-top:4px">W38</div></div>
+              <div><div class="kpi-label">Known Allergies</div><div style="font-size:14px;font-weight:700;margin-top:4px;color:#DC2626">Penicillin</div></div>
+              <div><div class="kpi-label">High Risk Flag</div><div style="font-size:14px;font-weight:700;margin-top:4px;color:#DC2626">⚠ Hypertension</div></div>
+              <div><div class="kpi-label">Emergency Contact</div><div style="font-size:14px;font-weight:700;margin-top:4px">+91 98765 43210</div></div>
+              <div><div class="kpi-label">Assigned Doctor</div><div style="font-size:14px;font-weight:700;margin-top:4px">Dr. Priya Mehta</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         VIEW 7: PATIENT / FAMILY
+         ================================================================ -->
+    <section id="view-patient" class="rbac-view" aria-hidden="true">
+      <div class="view-header">
+        <div class="view-title-group">
+          <div class="view-eyebrow" style="color:var(--c-patient)">💖 Your Pregnancy Journey</div>
+          <h1 class="view-title">Personal Care Hub</h1>
+          <p class="view-subtitle">Symptoms, vitals, appointments, and your care team — all in one place</p>
+        </div>
+        <button class="btn-primary-role" style="--role-color:var(--c-patient)">+ Log Today's Symptoms</button>
+      </div>
+
+      <div class="kpi-grid" style="--role-color:var(--c-patient)">
+        <div class="kpi-card"><span class="kpi-icon">🌿</span><div class="kpi-label">Pregnancy Week</div><div class="kpi-value">Week 24</div><div class="kpi-trend">Trimester 2</div></div>
+        <div class="kpi-card"><span class="kpi-icon">📆</span><div class="kpi-label">Next Appointment</div><div class="kpi-value">Aug 30</div><div class="kpi-trend">Glucose Screening</div></div>
+        <div class="kpi-card"><span class="kpi-icon">📋</span><div class="kpi-label">Symptoms Logged</div><div class="kpi-value">14</div><div class="kpi-trend">This trimester</div></div>
+        <div class="kpi-card"><span class="kpi-icon">💬</span><div class="kpi-label">Unread Messages</div><div class="kpi-value">2</div><div class="kpi-trend">From care team</div></div>
+      </div>
+
+      <div class="content-grid">
+        <div class="col-6 panel-card">
+          <div class="panel-header"><div class="panel-title">🌡️ Symptom & Vitals Hub</div><button class="panel-action-btn">Full History →</button></div>
+          <div class="panel-body">
+            <div class="feed-item"><div class="feed-dot" style="background:var(--c-patient)"></div><div class="feed-content"><div class="feed-text">Mild lower back pain — Logged today</div><div class="feed-meta">Intensity: 4/10 · Morning</div></div></div>
+            <div class="feed-item"><div class="feed-dot"></div><div class="feed-content"><div class="feed-text">Nausea — Logged yesterday</div><div class="feed-meta">Intensity: 3/10 · After breakfast</div></div></div>
+            <div class="feed-item"><div class="feed-dot"></div><div class="feed-content"><div class="feed-text">Baby kicks — 8 today</div><div class="feed-meta">Kick counter active</div></div></div>
+          </div>
+        </div>
+
+        <div class="col-6 panel-card">
+          <div class="panel-header"><div class="panel-title">👫 Partner Action Guides</div></div>
+          <div class="panel-body">
+            <div class="feed-item"><div class="feed-dot" style="background:var(--c-patient)"></div><div class="feed-content"><div class="feed-text">Week 24 — What your partner needs this week</div><div class="feed-meta">Updated guide available</div></div></div>
+            <div class="feed-item"><div class="feed-dot"></div><div class="feed-content"><div class="feed-text">Preparing the hospital bag checklist</div><div class="feed-meta">8 items remaining</div></div></div>
+            <div class="feed-item"><div class="feed-dot"></div><div class="feed-content"><div class="feed-text">Joining the next doctor appointment</div><div class="feed-meta">Aug 30 — Confirm attendance</div></div></div>
+          </div>
+        </div>
+
+        <div class="col-12 panel-card">
+          <div class="panel-header"><div class="panel-title">📆 Appointment Tracker</div><button class="panel-action-btn">Book New →</button></div>
+          <div class="panel-body" style="padding:0">
+            <table class="rbac-table">
+              <thead><tr><th>Date</th><th>Type</th><th>Doctor</th><th>Location</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Aug 30</strong></td><td>Glucose Screening</td><td>Dr. Priya Mehta</td><td>Apollo Maternity</td><td><span class="status-badge status-pending">⏳ Upcoming</span></td></tr>
+                <tr><td><strong>Sep 15</strong></td><td>Anomaly Scan</td><td>Dr. Arjun Rao</td><td>Fortis Imaging</td><td><span class="status-badge status-offline">📍 Booked</span></td></tr>
+                <tr><td><strong>Aug 15</strong></td><td>Routine Check-up</td><td>Dr. Priya Mehta</td><td>Apollo Maternity</td><td><span class="status-badge status-active">✅ Completed</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         VIEW: ACCOUNT & PROFILE SETTINGS (Universal)
+         ================================================================ -->
+    <section id="view-account" class="rbac-view" aria-hidden="true">
+      <div class="view-header">
+        <div class="view-title-group">
+          <div class="view-eyebrow">⚙️ Account</div>
+          <h1 class="view-title">Account &amp; Profile Settings</h1>
+          <p class="view-subtitle">Update your profile, security, and role-specific information.</p>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end">
+          <button class="btn-secondary-role" type="button" id="profileDiscardBtn">Discard</button>
+          <button class="btn-primary-role" type="button" id="profileSaveBtn">Save Changes</button>
+        </div>
+      </div>
+
+      <!-- Unsaved changes warning bar -->
+      <div class="dirty-bar" id="profileDirtyBar" aria-live="polite" style="display:none;">
+        <div class="dirty-bar-left">
+          <span class="dirty-dot"></span>
+          <span>You have unsaved changes.</span>
+        </div>
+        <div class="dirty-bar-right">
+          <button class="btn-secondary-role" type="button" id="dirtyDiscardBtn">Discard</button>
+          <button class="btn-primary-role" type="button" id="dirtySaveBtn">Save</button>
+        </div>
+      </div>
+
+      <div class="settings-shell">
+        <!-- Left nav / Tabs -->
+        <aside class="settings-nav" aria-label="Profile settings navigation">
+          <button class="settings-nav-item active" type="button" data-tab="general">General Profile</button>
+          <button class="settings-nav-item" type="button" data-tab="security">Account &amp; Security</button>
+          <button class="settings-nav-item" type="button" data-tab="professional" id="tabProfessional">Professional Details</button>
+          <button class="settings-nav-item" type="button" data-tab="notifications">Notification Preferences</button>
+        </aside>
+
+        <!-- Main -->
+        <div class="settings-content">
+          <form id="profileForm" class="settings-form" autocomplete="on">
+            <!-- General -->
+            <div class="settings-panel" data-tab-panel="general">
+              <div class="panel-card">
+                <div class="panel-header">
+                  <div class="panel-title">🖼️ Avatar &amp; Media</div>
+                </div>
+                <div class="panel-body">
+                  <div class="avatar-row">
+                    <div class="avatar-preview" id="avatarPreview" aria-label="Avatar preview">U</div>
+                    <div style="flex:1">
+                      <div class="kpi-label" style="margin-bottom:6px;">Profile Photo (JPEG/PNG/WebP, max 5MB)</div>
+                      <div class="dropzone" id="avatarDropzone">
+                        <input id="avatarFile" type="file" accept="image/jpeg,image/png,image/webp" />
+                        <div class="dropzone-title">Drag &amp; drop an image, or click to select</div>
+                        <div class="dropzone-sub">Client-side compression + preview</div>
+                      </div>
+                      <div class="inline-actions">
+                        <button type="button" class="btn-secondary-role" id="avatarUploadBtn">Upload</button>
+                        <button type="button" class="btn-secondary-role" id="avatarDeleteBtn">Remove</button>
+                      </div>
+                      <div class="field-hint" id="avatarHint"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel-card">
+                <div class="panel-header">
+                  <div class="panel-title">👤 Identity Basics</div>
+                </div>
+                <div class="panel-body">
+                  <div class="form-grid">
+                    <div class="field">
+                      <label class="field-label" for="fullName">Full Name</label>
+                      <input class="field-input" id="fullName" name="full_name" type="text" placeholder="Your full name" />
+                      <div class="field-error" data-err-for="fullName"></div>
+                    </div>
+                    <div class="field">
+                      <label class="field-label" for="preferredName">Preferred Name</label>
+                      <input class="field-input" id="preferredName" name="preferred_name" type="text" placeholder="What should we call you?" />
+                      <div class="field-error" data-err-for="preferredName"></div>
+                    </div>
+                    <div class="field">
+                      <label class="field-label" for="pronouns">Gender / Pronouns</label>
+                      <input class="field-input" id="pronouns" name="pronouns" type="text" placeholder="e.g. she/her, he/him, they/them" />
+                      <div class="field-error" data-err-for="pronouns"></div>
+                    </div>
+                    <div class="field">
+                      <label class="field-label" for="phone">Phone Number</label>
+                      <input class="field-input" id="phone" name="phone" type="tel" placeholder="+91 98765 43210" />
+                      <div class="field-error" data-err-for="phone"></div>
+                    </div>
+
+                    <div class="field">
+                      <label class="field-label" for="email">Primary Email</label>
+                      <input class="field-input" id="email" name="email" type="email" disabled />
+                      <div class="field-hint">Email change requires OTP verification.</div>
+                    </div>
+
+                    <div class="field">
+                      <label class="field-label" for="newEmail">Change Email</label>
+                      <div class="field-inline">
+                        <input class="field-input" id="newEmail" type="email" placeholder="new@email.com" />
+                        <button class="btn-secondary-role" type="button" id="requestEmailOtpBtn">Send OTP</button>
+                      </div>
+                      <div class="field-inline" style="margin-top:10px;">
+                        <input class="field-input" id="emailOtp" type="text" inputmode="numeric" maxlength="6" placeholder="Enter OTP" />
+                        <button class="btn-primary-role" type="button" id="verifyEmailOtpBtn">Verify &amp; Update</button>
+                      </div>
+                      <div class="field-hint" id="emailOtpHint"></div>
+                      <div class="field-error" data-err-for="newEmail"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Security -->
+            <div class="settings-panel hidden" data-tab-panel="security">
+              <div class="panel-card">
+                <div class="panel-header">
+                  <div class="panel-title">🔐 Password &amp; Credentials</div>
+                </div>
+                <div class="panel-body">
+                  <div class="form-grid">
+                    <div class="field">
+                      <label class="field-label" for="currentPassword">Current Password</label>
+                      <input class="field-input" id="currentPassword" type="password" autocomplete="current-password" />
+                      <div class="field-error" data-err-for="currentPassword"></div>
+                    </div>
+                    <div class="field">
+                      <label class="field-label" for="newPassword">New Password</label>
+                      <input class="field-input" id="newPassword" type="password" autocomplete="new-password" />
+                      <div class="strength-meter">
+                        <div class="strength-bar" id="pwdStrengthBar"></div>
+                        <div class="strength-label" id="pwdStrengthLabel"></div>
+                      </div>
+                      <div class="field-hint">Min 12 chars with upper, lower, number, symbol.</div>
+                      <div class="field-error" data-err-for="newPassword"></div>
+                    </div>
+                    <div class="field">
+                      <label class="field-label" for="confirmPassword">Confirm New Password</label>
+                      <input class="field-input" id="confirmPassword" type="password" autocomplete="new-password" />
+                      <div class="field-error" data-err-for="confirmPassword"></div>
+                    </div>
+                  </div>
+                  <div class="inline-actions">
+                    <button class="btn-primary-role" type="button" id="updatePasswordBtn">Update Password</button>
+                    <div class="field-hint" id="passwordHint"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel-card">
+                <div class="panel-header">
+                  <div class="panel-title">🛡️ Two-Factor Authentication (2FA)</div>
+                </div>
+                <div class="panel-body">
+                  <div class="toggle-row">
+                    <div>
+                      <div style="font-weight:800;">Enable 2FA</div>
+                      <div class="field-hint">Recommended for staff handling patient data.</div>
+                    </div>
+                    <label class="switch">
+                      <input id="twoFaEnabled" type="checkbox" />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                  <div class="form-grid" style="margin-top:14px;">
+                    <div class="field">
+                      <label class="field-label" for="twoFaMethod">2FA Method</label>
+                      <select class="field-input" id="twoFaMethod">
+                        <option value="">Select method</option>
+                        <option value="sms">SMS OTP</option>
+                        <option value="authenticator">Authenticator App</option>
+                      </select>
+                      <div class="field-error" data-err-for="twoFaMethod"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Professional -->
+            <div class="settings-panel hidden" data-tab-panel="professional" id="professionalPanel">
+              <div class="panel-card">
+                <div class="panel-header">
+                  <div class="panel-title">🏥 Role-Specific Details</div>
+                </div>
+                <div class="panel-body">
+                  <!-- Clinical (Doctors) -->
+                  <div class="role-block" data-role-group="clinical">
+                    <div class="role-block-title">🩺 Clinical Staff</div>
+                    <div class="form-grid">
+                      <div class="field">
+                        <label class="field-label" for="licenseNo">Medical Reg. / License No.</label>
+                        <input class="field-input" id="licenseNo" name="license_number" type="text" />
+                        <div class="field-hint" id="licenseHint">Read-only once verified.</div>
+                      </div>
+                      <div class="field">
+                        <label class="field-label" for="specialty">Department / Specialty</label>
+                        <select class="field-input" id="specialty">
+                          <option value="">Select specialty</option>
+                        </select>
+                      </div>
+                      <div class="field">
+                        <label class="field-label" for="yearsExperience">Years of Experience</label>
+                        <input class="field-input" id="yearsExperience" type="number" min="0" max="60" step="1" />
+                      </div>
+                      <div class="field">
+                        <label class="field-label">Tele-consultation Availability</label>
+                        <div class="field-inline">
+                          <input class="field-input" id="teleStart" type="time" />
+                          <input class="field-input" id="teleEnd" type="time" />
+                        </div>
+                        <div class="field-hint">Local time window (e.g. 10:00–16:00)</div>
+                      </div>
+                    </div>
+                    <div class="field" style="margin-top:10px;">
+                      <label class="field-label">Digital Signature (for e‑Rx)</label>
+                      <div class="dropzone small" id="signatureDropzone">
+                        <input id="signatureFile" type="file" accept="image/jpeg,image/png,image/webp" />
+                        <div class="dropzone-title">Upload signature image</div>
+                      </div>
+                      <div class="inline-actions">
+                        <button type="button" class="btn-secondary-role" id="signatureUploadBtn">Upload</button>
+                        <button type="button" class="btn-secondary-role" id="signatureDeleteBtn">Remove</button>
+                      </div>
+                      <div class="field-hint" id="signatureHint"></div>
+                    </div>
+                  </div>
+
+                  <!-- Allied + Field -->
+                  <div class="role-block" data-role-group="allied_field">
+                    <div class="role-block-title">🌿 Allied &amp; Field Staff</div>
+                    <div class="form-grid">
+                      <div class="field">
+                        <label class="field-label" for="subSpecialty">Sub-specialty</label>
+                        <input class="field-input" id="subSpecialty" type="text" placeholder="e.g. Lactation, CBT, Maternal nutrition" />
+                      </div>
+                      <div class="field">
+                        <label class="field-label" for="regions">Assigned Sectors / Regions</label>
+                        <input class="field-input" id="regions" type="text" placeholder="Comma-separated (e.g. Sector 12, Rampur, PHC Anand)" />
+                        <div class="field-hint">Stored as a list.</div>
+                      </div>
+                      <div class="field">
+                        <label class="field-label" for="languages">Preferred Language(s)</label>
+                        <input class="field-input" id="languages" type="text" placeholder="Comma-separated (e.g. Hindi, English)" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Admins -->
+                  <div class="role-block" data-role-group="admin">
+                    <div class="role-block-title">🏢 Administration</div>
+                    <div class="form-grid">
+                      <div class="field">
+                        <label class="field-label" for="adminDesignation">Administrative Designation</label>
+                        <input class="field-input" id="adminDesignation" type="text" placeholder="e.g. Facility Director" />
+                      </div>
+                      <div class="field">
+                        <label class="field-label" for="escalationContact">Emergency Escalation Contact</label>
+                        <input class="field-input" id="escalationContact" type="tel" placeholder="+91 90000 00000" />
+                      </div>
+                      <div class="field">
+                        <label class="field-label" for="facilityAccessId">Facility Access ID</label>
+                        <input class="field-input" id="facilityAccessId" type="text" disabled />
+                        <div class="field-hint">Read-only.</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Patients -->
+                  <div class="role-block" data-role-group="patient">
+                    <div class="role-block-title">💖 Patient &amp; Family</div>
+                    <div class="form-grid">
+                      <div class="field">
+                        <label class="field-label" for="bloodGroup">Blood Group</label>
+                        <select class="field-input" id="bloodGroup">
+                          <option value="">Select</option>
+                          <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                          <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+                        </select>
+                      </div>
+                      <div class="field">
+                        <label class="field-label" for="primaryDoctor">Primary Care Doctor</label>
+                        <select class="field-input" id="primaryDoctor">
+                          <option value="">Select doctor</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div style="margin-top:12px;">
+                      <div class="kpi-label" style="margin-bottom:8px;">Emergency Contacts</div>
+                      <div id="emergencyContacts"></div>
+                      <button class="btn-secondary-role" type="button" id="addEmergencyContactBtn" style="margin-top:10px;">+ Add Contact</button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="settings-panel hidden" data-tab-panel="notifications">
+              <div class="panel-card">
+                <div class="panel-header">
+                  <div class="panel-title">🔔 Notification Preferences</div>
+                </div>
+                <div class="panel-body">
+                  <div class="toggle-list">
+                    <label class="toggle-item">
+                      <input type="checkbox" id="notifEmail" />
+                      <span>Email notifications</span>
+                    </label>
+                    <label class="toggle-item">
+                      <input type="checkbox" id="notifSms" />
+                      <span>SMS notifications</span>
+                    </label>
+                    <label class="toggle-item">
+                      <input type="checkbox" id="notifCriticalOnly" />
+                      <span>Critical alerts only</span>
+                    </label>
+                  </div>
+                  <div class="field-hint">These preferences are stored per account and applied across devices.</div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         VIEW: PENDING VERIFICATION (Unverified ROLE_DOCTOR)
+         ================================================================ -->
+    <section id="view-pending-verification" class="rbac-view" aria-hidden="true">
+      <div class="pending-card">
+        <div class="pending-icon">⏳</div>
+        <h2>Account Verification Pending</h2>
+        <div class="pending-status-badge">🔒 Clinical Access Restricted</div>
+        <p>
+          Your healthcare professional credentials are currently under review by our verification team.
+          Access to clinical dashboards, EHR systems, and patient data will be granted once
+          your license and credentials are verified — typically within <strong>24–48 business hours</strong>.
+        </p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <button class="btn-secondary-role">📞 Contact Support</button>
+          <button class="btn-primary-role" style="--role-color:#D97706" onclick="document.getElementById('rbac-logout-btn').click()">🔓 Logout</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Mobile Bottom Nav (rendered by rbac-sidebar.js) ─────────────────── -->
+  <nav id="mobile-bottom-nav" aria-label="Mobile navigation" role="navigation"></nav>
+
+</div><!-- /#rbac-app -->
+
+<!-- ====================================================================
+     Scripts — sidebar must load before router
+     ==================================================================== -->
+<script src="rbac-sidebar.js"></script>
+<script src="rbac-router.js"></script>
+<script src="profile-settings.js"></script>
+
+</body>
+</html>
